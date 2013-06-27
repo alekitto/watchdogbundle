@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\FlattenException;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 
 use Symfony\Component\DependencyInjection\Container;
 
@@ -40,36 +41,10 @@ class ExceptionHandler
     private $debug;
     private $charset;
 
-    /**
-     * Service Container
-     * @var Container
-     */
-    private static $serviceContainer = null;
-
     public function __construct($debug = true, $charset = 'UTF-8')
     {
         $this->debug = $debug;
         $this->charset = $charset;
-    }
-
-    public static function registerContainer(Container $container)
-    {
-      self::$serviceContainer = $container;
-    }
-
-    /**
-     * Register the exception handler.
-     *
-     * @param Boolean $debug
-     *
-     * @return ExceptionHandler The registered exception handler
-     */
-    public static function register($debug = true)
-    {
-        $handler = new static($debug);
-        set_exception_handler(array($handler, 'handle'));
-
-        return $handler;
     }
 
     /**
@@ -77,20 +52,20 @@ class ExceptionHandler
      *
      * @param \Exception $exception An \Exception instance
      */
-    public function handle(\Exception $exception, TokenInterface $securityToken = null)
+    public function handle(\Exception $exception, Registry $doctrine = null, TokenInterface $securityToken = null)
     {
         if($this->debug) {
             if($exception instanceof FatalErrorException) {
                 return $this->createResponse($exception);
             }
         } else {
-            $this->logException($exception, $securityToken);
+            $this->logException($exception, $doctrine, $securityToken);
         }
 
         return null;
     }
 
-    private function logException(\Exception $exception, TokenInterface $token = null)
+    private function logException(\Exception $exception, Registry $doctrine, TokenInterface $token = null)
     {
         restore_exception_handler();
         $level = E_ERROR;
@@ -125,11 +100,9 @@ class ExceptionHandler
         $error->setVariables(json_encode($variables));
         $error->setUser(json_encode($user));
 
-        $em = self::$serviceContainer->get('doctrine')->getEntityManager();
+        $em = $doctrine->getManager();
         $em->persist($error);
         $em->flush();
-
-        throw $exception;
     }
 
     /**

@@ -1,0 +1,12 @@
+
+services:
+    watchdog:
+        class:              Kcs\WatchdogBundle\EventListener\ExceptionListener
+        arguments:
+            -               "@security.context"
+            -               "@doctrine"
+            -               "@logger"
+            -               "%kernel.debug%"
+            -               "%kcs_watchdog.error_reporting_level%"
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
