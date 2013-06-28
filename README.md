@@ -7,15 +7,15 @@
 
 ### Installation:
 
-* Clone this repository into src/ folder of your symfony2 project
-* Override your AppKernel::init() function with this:
 
-```php
-    public function init()
-    {
-        parent::init();
-        Kcs\WatchdogBundle\KcsWatchdogBundle::register($this->debug);
-    }
+* Include this bundle in your composer.json
+
+```javascript
+    "require": {
+        ...
+        "kcs/watchdog-bundle": "dev-master",
+        ...
+        }
 ```
 
 * Create the watchdog table on your database
