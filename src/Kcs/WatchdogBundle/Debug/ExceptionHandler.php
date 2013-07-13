@@ -88,7 +88,8 @@ class ExceptionHandler
 
         $user = array();
         if(null !== $token) {
-            throw new Exception('Unimplemented!');
+            $user['username'] = $token->getUsername();
+            $user['attributes'] = $token->getAttributes();
         }
 
         $error = new Error;
