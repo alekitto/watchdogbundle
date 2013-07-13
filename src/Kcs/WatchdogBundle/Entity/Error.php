@@ -48,7 +48,7 @@ class Error
     protected $variables;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", name="user_details")
      */
     protected $user;
 
