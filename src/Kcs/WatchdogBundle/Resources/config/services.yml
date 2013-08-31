@@ -8,5 +8,6 @@ services:
             -               "@logger"
             -               "%kernel.debug%"
             -               "%kcs_watchdog.error_reporting_level%"
+            -               "%kcs_watchdog.allowed_exceptions%"
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }

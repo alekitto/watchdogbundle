@@ -14,8 +14,11 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+            ->arrayNode('allowed_exceptions')
+                ->prototype('scalar')->end()
+            ->end()
             ->scalarNode('error_reporting_level')->defaultValue(-1)->end()
-            ->end();
+        ->end();
 
         return $treeBuilder;
     }

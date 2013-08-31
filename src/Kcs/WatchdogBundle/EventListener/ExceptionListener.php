@@ -38,6 +38,12 @@ class ExceptionListener
     private $logger = null;
 
     /**
+     * Exceptions not to be logged
+     * @var string[]
+     */
+    private $allowedExceptions = array();
+
+    /**
      * Error levels to string
      * @var array
      */
@@ -66,11 +72,12 @@ class ExceptionListener
     private $reservedMemory;
 
     public function __construct(SecurityContext $context, Registry $doctrine,
-            LoggerInterface $logger, $debug, $errorLevel) {
+            LoggerInterface $logger, $debug, $errorLevel, array $allowedExceptions) {
         $this->context = $context;
         $this->doctrine = $doctrine;
         $this->errorReportingLevel = $errorLevel;
         $this->logger = $logger;
+        $this->allowedExceptions = $allowedExceptions;
 
         // Initialize the exception handler
         $this->handler = new ExceptionHandler($debug);
@@ -92,6 +99,10 @@ class ExceptionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
+
+        $exception_class = get_class($exception);
+        if(in_array($exception_class, $this->allowedExceptions))
+            return;
 
         $exceptionHandler = set_exception_handler(function() {});
         restore_exception_handler();

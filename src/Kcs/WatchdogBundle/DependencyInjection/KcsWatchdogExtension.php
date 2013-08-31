@@ -18,6 +18,7 @@ class KcsWatchdogExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('kcs_watchdog.error_reporting_level', $config['error_reporting_level']);
+        $container->setParameter('kcs_watchdog.allowed_exceptions', $config['allowed_exceptions']);
         $loader = new YamlFileLoader(
                 $container,
                 new FileLocator(__DIR__.'/../Resources/config'));
