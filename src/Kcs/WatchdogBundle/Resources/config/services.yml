@@ -5,9 +5,17 @@ services:
         arguments:
             -               "@security.context"
             -               "@doctrine"
-            -               "@logger"
             -               "%kernel.debug%"
-            -               "%kcs_watchdog.error_reporting_level%"
             -               "%kcs_watchdog.allowed_exceptions%"
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+    watchdog_error_logger:
+        class:              Kcs\WatchdogBundle\Debug\ErrorHandler
+        arguments:
+            -               "@security.context"
+            -               "@doctrine"
+            -               "%kernel.debug%"
+            -               "%kcs_watchdog.error_reporting_level%"
+        tags:
+            - { name: kernel.event_subscriber }
