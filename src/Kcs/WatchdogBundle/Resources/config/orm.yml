@@ -1,2 +1,0 @@
-parameters:
-    kcs_watchdog.storage_class:           Kcs\WatchdogBundle\Storage\Doctrine

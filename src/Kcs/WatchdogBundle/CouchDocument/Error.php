@@ -1,12 +1,11 @@
 <?php
 
-namespace Kcs\WatchdogBundle\Doctrine;
+namespace Kcs\WatchdogBundle\CouchDocument;
 use Kcs\WatchdogBundle\Entity\AbstractError;
 
 /**
- * Doctrine ORM Watchdog Error class
+ * CouchDB watchdog Error document entity
  */
 class Error extends AbstractError
 {
 }
-

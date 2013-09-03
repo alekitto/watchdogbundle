@@ -12,7 +12,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('kcs_watchdog');
 
-        $supportedDrivers = array('orm');
+        $supportedDrivers = array('orm', 'couchdb');
 
         $rootNode
             ->children()
@@ -27,6 +27,7 @@ class Configuration implements ConfigurationInterface
                 ->prototype('scalar')->end()
             ->end()
             ->scalarNode('error_reporting_level')->defaultValue(-1)->end()
+            ->scalarNode('document_manager')->defaultValue(null)->end()
         ->end();
 
         return $treeBuilder;

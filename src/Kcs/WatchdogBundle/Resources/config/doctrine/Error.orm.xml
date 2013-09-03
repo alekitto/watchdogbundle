@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <mapped-superclass name="Kcs\WatchdogBundle\Entity\Error" table="watchdog">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO" />
+        </id>
+        <field name="level" type="integer" />
+        <field name="message" type="string" length="1020" />
+        <field name="file" type="string" length="510" />
+        <field name="line" type="integer" />
+        <field name="trace" type="array" />
+        <field name="variables" type="array" />
+        <field name="user" fieldName="user_details" type="array" />
+    </mapped-superclass>
+</doctrine-mapping>
