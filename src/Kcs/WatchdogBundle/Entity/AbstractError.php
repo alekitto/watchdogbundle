@@ -2,53 +2,48 @@
 
 namespace Kcs\WatchdogBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
- * @ORM\Entity
- * @ORM\Table(name="watchdog")
+ * Storage-agnostic watchdog error class
  */
-class Error
+abstract class AbstractError
 {
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @var integer
      */
     protected $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @var integer
      */
     protected $level;
 
     /**
-     * @ORM\Column(type="string", length=1020)
+     * @var string
      */
     protected $message;
 
     /**
-     * @ORM\Column(type="string", length=510)
+     * @var string
      */
     protected $file;
 
     /**
-     * @ORM\Column(type="integer")
+     * @var integer
      */
     protected $line;
 
     /**
-     * @ORM\Column(type="text")
+     * @var array|mixed
      */
     protected $trace;
 
     /**
-     * @ORM\Column(type="text")
+     * @var array|mixed
      */
     protected $variables;
 
     /**
-     * @ORM\Column(type="text", name="user_details")
+     * @var array|mixed
      */
     protected $user;
 
@@ -66,7 +61,7 @@ class Error
      * Set level
      *
      * @param integer $level
-     * @return Error
+     * @return AbstractError
      */
     public function setLevel($level)
     {
@@ -89,7 +84,7 @@ class Error
      * Set message
      *
      * @param string $message
-     * @return Error
+     * @return AbstractError
      */
     public function setMessage($message)
     {
@@ -112,7 +107,7 @@ class Error
      * Set file
      *
      * @param string $file
-     * @return Error
+     * @return AbstractError
      */
     public function setFile($file)
     {
@@ -135,7 +130,7 @@ class Error
      * Set line
      *
      * @param integer $line
-     * @return Error
+     * @return AbstractError
      */
     public function setLine($line)
     {
@@ -157,8 +152,8 @@ class Error
     /**
      * Set trace
      *
-     * @param string $trace
-     * @return Error
+     * @param array $trace
+     * @return AbstractError
      */
     public function setTrace($trace)
     {
@@ -170,7 +165,7 @@ class Error
     /**
      * Get trace
      *
-     * @return string 
+     * @return array 
      */
     public function getTrace()
     {
@@ -180,8 +175,8 @@ class Error
     /**
      * Set variables
      *
-     * @param string $variables
-     * @return Error
+     * @param array $variables
+     * @return AbstractError
      */
     public function setVariables($variables)
     {
@@ -193,7 +188,7 @@ class Error
     /**
      * Get variables
      *
-     * @return string 
+     * @return array 
      */
     public function getVariables()
     {
@@ -203,8 +198,8 @@ class Error
     /**
      * Set user
      *
-     * @param string $user
-     * @return Error
+     * @param array $user
+     * @return AbstractError
      */
     public function setUser($user)
     {
@@ -216,7 +211,7 @@ class Error
     /**
      * Get user
      *
-     * @return string 
+     * @return array 
      */
     public function getUser()
     {

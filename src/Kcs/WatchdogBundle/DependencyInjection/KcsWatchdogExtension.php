@@ -23,6 +23,7 @@ class KcsWatchdogExtension extends Extension
                 $container,
                 new FileLocator(__DIR__.'/../Resources/config'));
 
+        $loader->load($config['db_driver'] . '.yml');
         $loader->load('services.yml');
     }
 }

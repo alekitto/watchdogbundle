@@ -12,8 +12,17 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('kcs_watchdog');
 
+        $supportedDrivers = array('orm');
+
         $rootNode
             ->children()
+            ->scalarNode('db_driver')
+                ->defaultValue('orm')
+                ->validate()
+                    ->ifNotInArray($supportedDrivers)
+                    ->thenInvalid('%s is not a supported driver')
+                ->end()
+            ->end()
             ->arrayNode('allowed_exceptions')
                 ->prototype('scalar')->end()
             ->end()

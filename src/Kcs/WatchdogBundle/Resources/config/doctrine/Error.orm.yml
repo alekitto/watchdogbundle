@@ -1,0 +1,25 @@
+Kcs\WatchdogBundle\Doctrine\Error:
+  type:     entity
+  table:    watchdog
+  id:
+    id:
+      type: integer
+      generator: { strategy: AUTO }
+  fields:
+    level:
+      type: integer
+    message:
+      type: string
+      length: 1020
+    file:
+      type: string
+      length: 510
+    line:
+      type: integer
+    trace:
+      type: array
+    variables:
+      type: array
+    user:
+      type: array
+      name: user_details

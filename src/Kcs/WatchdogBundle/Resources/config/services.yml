@@ -4,10 +4,16 @@ services:
         class:              Kcs\WatchdogBundle\EventListener\ExceptionListener
         arguments:
             -               "@security.context"
-            -               "@doctrine"
+            -               "@watchdog.storage"
             -               "@logger"
             -               "%kernel.debug%"
             -               "%kcs_watchdog.error_reporting_level%"
             -               "%kcs_watchdog.allowed_exceptions%"
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+    watchdog.storage:
+        class:              "%kcs_watchdog.storage_class%"
+        arguments:
+            -               "@doctrine"
+        public:             false

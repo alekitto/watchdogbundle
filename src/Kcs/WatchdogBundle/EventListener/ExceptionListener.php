@@ -4,9 +4,9 @@ namespace Kcs\WatchdogBundle\EventListener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Security\Core\SecurityContext;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 
+use Kcs\WatchdogBundle\Storage\StorageInterface;
 use Kcs\WatchdogBundle\Debug\ExceptionHandler;
 
 class ExceptionListener
@@ -20,10 +20,10 @@ class ExceptionListener
     private $context = null;
 
     /**
-     * Doctrine Interface
-     * @var Registry
+     * Entity Storage Interface
+     * @var StorageInterface
      */
-    private $doctrine = null;
+    private $storage = null;
 
     /**
      * Exception Handler
@@ -71,10 +71,10 @@ class ExceptionListener
 
     private $reservedMemory;
 
-    public function __construct(SecurityContext $context, Registry $doctrine,
+    public function __construct(SecurityContext $context, StorageInterface $storage,
             LoggerInterface $logger, $debug, $errorLevel, array $allowedExceptions) {
         $this->context = $context;
-        $this->doctrine = $doctrine;
+        $this->storage = $storage;
         $this->errorReportingLevel = $errorLevel;
         $this->logger = $logger;
         $this->allowedExceptions = $allowedExceptions;
@@ -110,7 +110,7 @@ class ExceptionListener
         if (is_array($exceptionHandler) && $exceptionHandler[0] instanceof ExceptionHandler)
         {
             $response = $exceptionHandler[0]->handle($exception,
-                    $this->doctrine, $this->context->getToken());
+                    $this->storage, $this->context->getToken());
             if($response !== null) {
                 $event->setResponse($response);
             }
@@ -163,7 +163,7 @@ class ExceptionListener
             $level = isset(self::$levels[$type]) ? self::$levels[$type] : $type;
             $message = sprintf('%s: %s in %s line %d', $level, $error['message'], $error['file'], $error['line']);
             $exception = new FatalErrorException($message, 0, $type, $error['file'], $error['line']);
-            if(($response = $exceptionHandler[0]->handle($exception, $this->doctrine,
+            if(($response = $exceptionHandler[0]->handle($exception, $this->storage,
                     $this->context ? $this->context->getToken() : null))) {
                 $response->send();
             }
