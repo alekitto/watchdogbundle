@@ -11,14 +11,13 @@
 
 namespace Kcs\WatchdogBundle\Debug;
 
-use Kcs\WatchdogBundle\Entity\Error;
+use Kcs\WatchdogBundle\Storage\StorageInterface;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\FlattenException;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 
 if (!defined('ENT_SUBSTITUTE')) {
     define('ENT_SUBSTITUTE', 8);
@@ -51,20 +50,20 @@ class ExceptionHandler
      *
      * @param \Exception $exception An \Exception instance
      */
-    public function handle(\Exception $exception, Registry $doctrine = null, TokenInterface $securityToken = null)
+    public function handle(\Exception $exception, StorageInterface $storage, TokenInterface $securityToken = null)
     {
         if($this->debug) {
             if($exception instanceof FatalErrorException) {
                 return $this->createResponse($exception);
             }
         } else {
-            $this->logException($exception, $doctrine, $securityToken);
+            $this->logException($exception, $storage, $securityToken);
         }
 
         return null;
     }
 
-    private function logException(\Exception $exception, Registry $doctrine, TokenInterface $token = null)
+    private function logException(\Exception $exception, StorageInterface $storage, TokenInterface $token = null)
     {
         restore_exception_handler();
         $level = E_ERROR;
@@ -72,7 +71,6 @@ class ExceptionHandler
             $level = $exception->getSeverity();
         }
 
-        $trace = json_encode($exception->getTrace());
         $variables = array(
             'SERVER'           => $_SERVER,
             'GET'              => isset($_GET)?$_GET:array(),
@@ -91,18 +89,16 @@ class ExceptionHandler
             $user['attributes'] = $token->getAttributes();
         }
 
-        $error = new Error;
-        $error->setLevel($level);
-        $error->setMessage($exception->getMessage());
-        $error->setFile($exception->getFile());
-        $error->setLine($exception->getLine());
-        $error->setTrace($trace);
-        $error->setVariables(json_encode($variables));
-        $error->setUser(json_encode($user));
+        $error = $storage->getNewEntity();
+        $error->setLevel($level)
+              ->setMessage($exception->getMessage())
+              ->setFile($exception->getFile())
+              ->setLine($exception->getLine())
+              ->setTrace($exception->getTrace())
+              ->setVariables($variables)
+              ->setUser($user);
 
-        $em = $doctrine->getManager();
-        $em->persist($error);
-        $em->flush();
+        $storage->persist($error);
     }
 
     /**

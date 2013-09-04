@@ -5,10 +5,8 @@ namespace Kcs\WatchdogBundle\DependencyInjection;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
-
-use Kcs\WatchdogBundle\Debug\ErrorHandler;
 
 class KcsWatchdogExtension extends Extension
 {
@@ -19,10 +17,12 @@ class KcsWatchdogExtension extends Extension
 
         $container->setParameter('kcs_watchdog.error_reporting_level', $config['error_reporting_level']);
         $container->setParameter('kcs_watchdog.allowed_exceptions', $config['allowed_exceptions']);
-        $loader = new YamlFileLoader(
+        $container->setParameter('kcs_watchdog.document_manager', $config['document_manager']);
+        $loader = new XmlFileLoader(
                 $container,
                 new FileLocator(__DIR__.'/../Resources/config'));
 
-        $loader->load('services.yml');
+        $loader->load($config['db_driver'] . '.xml');
+        $loader->load('services.xml');
     }
 }

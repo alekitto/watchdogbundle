@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping>
+
+    <mapped-superclass name="Kcs\WatchdogBundle\CouchDocument\Error" indexed="true">
+        <id name="id" />
+        <field name="level" type="integer" indexed="true" />
+        <field name="message" type="string" indexed="true" />
+        <field name="file" type="string" indexed="true" />
+        <field name="line" type="integer" indexed="true" />
+        <field name="trace" type="mixed" indexed="true" />
+        <field name="variables" type="mixed" indexed="true" />
+        <field name="user" fieldName="user_details" type="mixed" indexed="true" />
+    </mapped-superclass>
+</doctrine-mapping>

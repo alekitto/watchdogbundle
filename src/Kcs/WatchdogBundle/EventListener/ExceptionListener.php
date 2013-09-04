@@ -4,8 +4,8 @@ namespace Kcs\WatchdogBundle\EventListener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Security\Core\SecurityContext;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 
+use Kcs\WatchdogBundle\Storage\StorageInterface;
 use Kcs\WatchdogBundle\Debug\ExceptionHandler;
 
 class ExceptionListener
@@ -19,10 +19,10 @@ class ExceptionListener
     private $context = null;
 
     /**
-     * Doctrine Interface
-     * @var Registry
+     * Entity Storage Interface
+     * @var StorageInterface
      */
-    private $doctrine = null;
+    private $storage = null;
 
     /**
      * Exception Handler
@@ -36,10 +36,10 @@ class ExceptionListener
      */
     private $allowedExceptions = array();
 
-    public function __construct(SecurityContext $context, Registry $doctrine,
+    public function __construct(SecurityContext $context, StorageInterface $storage,
             $debug, array $allowedExceptions) {
         $this->context = $context;
-        $this->doctrine = $doctrine;
+        $this->storage = $storage;
         $this->allowedExceptions = $allowedExceptions;
 
         // Initialize the exception handler
@@ -61,7 +61,7 @@ class ExceptionListener
         if (is_array($exceptionHandler) && $exceptionHandler[0] instanceof ExceptionHandler)
         {
             $response = $exceptionHandler[0]->handle($exception,
-                    $this->doctrine, $this->context->getToken());
+                    $this->storage, $this->context->getToken());
             if($response !== null) {
                 $event->setResponse($response);
             }
