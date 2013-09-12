@@ -44,7 +44,7 @@ class ExceptionListener
 
         // Initialize the exception handler
         $this->handler = new ExceptionHandler($debug);
-        set_exception_handler(array($this->handler, 'handle'));
+        set_exception_handler(array($this, 'handleException'));
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
@@ -55,17 +55,15 @@ class ExceptionListener
         if(in_array($exception_class, $this->allowedExceptions))
             return;
 
-        $exceptionHandler = set_exception_handler(function() {});
-        restore_exception_handler();
-
-        if (is_array($exceptionHandler) && $exceptionHandler[0] instanceof ExceptionHandler)
-        {
-            $response = $exceptionHandler[0]->handle($exception,
-                    $this->storage, $this->context->getToken());
-            if($response !== null) {
-                $event->setResponse($response);
-            }
+        $response = $this->handler->handle($exception, $this->storage, $this->context->getToken());
+        if($response !== null) {
+            $event->setResponse($response);
         }
+    }
+
+    public function handleException(Exception $exception)
+    {
+      $this->handler->handle($exception, $this->storage, $this->context->getToken());
     }
 }
 

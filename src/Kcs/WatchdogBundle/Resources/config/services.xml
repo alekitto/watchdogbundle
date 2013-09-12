@@ -15,7 +15,7 @@
 
         <service id="watchdog_error_logger" class="Kcs\WatchdogBundle\Debug\ErrorHandler">
             <argument type="service" id="security.context" />
-            <argument type="service" id="doctrine" />
+            <argument type="service" id="watchdog.storage" />
             <argument>%kernel.debug%</argument>
             <argument>%kcs_watchdog.error_reporting_level%</argument>
             <tag name="kernel.event_subscriber" />

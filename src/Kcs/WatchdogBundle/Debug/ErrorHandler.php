@@ -3,11 +3,11 @@
 namespace Kcs\WatchdogBundle\Debug;
 
 use Symfony\Component\Security\Core\SecurityContext;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+use Kcs\WatchdogBundle\Storage\StorageInterface;
 use Kcs\WatchdogBundle\Debug\ExceptionHandler;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 
@@ -22,10 +22,10 @@ class ErrorHandler implements EventSubscriberInterface
     private $context = null;
 
     /**
-     * Doctrine Interface
-     * @var Registry
+     * Entity Storage Interface
+     * @var StorageInterface
      */
-    private $doctrine = null;
+    private $storage = null;
 
     /**
      * Exception Handler
@@ -61,9 +61,9 @@ class ErrorHandler implements EventSubscriberInterface
 
     private $reservedMemory;
 
-    public function __construct(SecurityContext $context, Registry $doctrine, $debug, $errorLevel) {
+    public function __construct(SecurityContext $context, StorageInterface $storage, $debug, $errorLevel) {
         $this->context = $context;
-        $this->doctrine = $doctrine;
+        $this->storage = $storage;
         $this->errorReportingLevel = $errorLevel;
 
         // Now set the error and fatal handlers
@@ -80,7 +80,6 @@ class ErrorHandler implements EventSubscriberInterface
 
         // Initialize the exception handler
         $this->handler = new ExceptionHandler($debug);
-        set_exception_handler(array($this->handler, 'handle'));
     }
 
     /**
@@ -94,7 +93,7 @@ class ErrorHandler implements EventSubscriberInterface
 
         if ($level & (E_USER_DEPRECATED | E_DEPRECATED)) {
             $deprecated = new \ErrorException(sprintf('%s: %s in %s line %d', isset(self::$levels[$level]) ? self::$levels[$level] : $level, $message, $file, $line), 0, $level, $file, $line);
-            $this->handler->handle($deprecated, $this->doctrine, $this->context ? $this->context->getToken() : null);
+            $this->handler->handle($deprecated, $this->storage, $this->context ? $this->context->getToken() : null);
             return true;
         }
 
@@ -120,7 +119,7 @@ class ErrorHandler implements EventSubscriberInterface
         $level = isset(self::$levels[$type]) ? self::$levels[$type] : $type;
         $message = sprintf('%s: %s in %s line %d', $level, $error['message'], $error['file'], $error['line']);
         $exception = new FatalErrorException($message, 0, $type, $error['file'], $error['line']);
-        if(($response = $this->handler->handle($exception, $this->doctrine,
+        if(($response = $this->handler->handle($exception, $this->storage,
                 $this->context ? $this->context->getToken() : null))) {
             $response->send();
         }

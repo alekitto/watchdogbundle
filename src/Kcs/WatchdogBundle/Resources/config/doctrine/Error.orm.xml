@@ -4,7 +4,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <mapped-superclass name="Kcs\WatchdogBundle\Entity\Error" table="watchdog">
+    <entity name="Kcs\WatchdogBundle\Entity\Error" table="watchdog">
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO" />
         </id>
@@ -15,5 +15,5 @@
         <field name="trace" type="array" />
         <field name="variables" type="array" />
         <field name="user" fieldName="user_details" type="array" />
-    </mapped-superclass>
+    </entity>
 </doctrine-mapping>

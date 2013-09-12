@@ -3,7 +3,7 @@
 namespace Kcs\WatchdogBundle\Storage;
 
 use Kcs\WatchdogBundle\Entity\AbstractError;
-use Kcs\WatchdogBundle\Doctrine\Error;
+use Kcs\WatchdogBundle\Entity\Error;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 
 class Doctrine implements StorageInterface
