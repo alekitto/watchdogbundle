@@ -15,5 +15,6 @@
         <field name="trace" type="array" />
         <field name="variables" type="array" />
         <field name="user" fieldName="user_details" type="array" />
+        <field name="read" type="boolean" />
     </entity>
 </doctrine-mapping>

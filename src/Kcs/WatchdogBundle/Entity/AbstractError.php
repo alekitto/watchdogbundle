@@ -48,6 +48,11 @@ abstract class AbstractError
     protected $user;
 
     /**
+     * @var boolean
+     */
+    protected $read;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -216,5 +221,28 @@ abstract class AbstractError
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Set read
+     *
+     * @param boolean $read
+     * @return AbstractError
+     */
+    public function setRead($read)
+    {
+        $this->read = $read;
+    
+        return $this;
+    }
+
+    /**
+     * Get read
+     *
+     * @return boolean 
+     */
+    public function getRead()
+    {
+        return $this->read;
     }
 }

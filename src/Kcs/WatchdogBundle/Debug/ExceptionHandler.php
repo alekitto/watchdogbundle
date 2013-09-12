@@ -65,6 +65,10 @@ class ExceptionHandler
 
     private function logException(\Exception $exception, StorageInterface $storage, TokenInterface $token = null)
     {
+        if (!$exception instanceof FlattenException) {
+            $exception = FlattenException::create($exception);
+        }
+
         $level = E_ERROR;
         if($exception instanceof \ErrorException) {
             $level = $exception->getSeverity();
@@ -88,15 +92,12 @@ class ExceptionHandler
             $user['attributes'] = $token->getAttributes();
         }
 
-        $trace = $exception->getTrace();
-        array_walk($trace, function(&$element) { unset($element['args']); });
-
         $error = $storage->getNewEntity();
         $error->setLevel($level)
               ->setMessage($exception->getMessage())
               ->setFile($exception->getFile())
               ->setLine($exception->getLine())
-              ->setTrace($trace)
+              ->setTrace($exception->getTrace())
               ->setVariables($variables)
               ->setUser($user);
 

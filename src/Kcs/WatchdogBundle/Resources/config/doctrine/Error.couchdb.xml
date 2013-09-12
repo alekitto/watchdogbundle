@@ -10,5 +10,6 @@
         <field name="trace" type="mixed" indexed="true" />
         <field name="variables" type="mixed" indexed="true" />
         <field name="user" fieldName="user_details" type="mixed" indexed="true" />
+        <field name="read" type="boolean" indexed="true" />
     </mapped-superclass>
 </doctrine-mapping>
