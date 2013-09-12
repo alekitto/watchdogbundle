@@ -65,7 +65,6 @@ class ExceptionHandler
 
     private function logException(\Exception $exception, StorageInterface $storage, TokenInterface $token = null)
     {
-        restore_exception_handler();
         $level = E_ERROR;
         if($exception instanceof \ErrorException) {
             $level = $exception->getSeverity();
@@ -89,12 +88,15 @@ class ExceptionHandler
             $user['attributes'] = $token->getAttributes();
         }
 
+        $trace = $exception->getTrace();
+        array_walk($trace, function(&$element) { unset($element['args']); });
+
         $error = $storage->getNewEntity();
         $error->setLevel($level)
               ->setMessage($exception->getMessage())
               ->setFile($exception->getFile())
               ->setLine($exception->getLine())
-              ->setTrace($exception->getTrace())
+              ->setTrace($trace)
               ->setVariables($variables)
               ->setUser($user);
 
