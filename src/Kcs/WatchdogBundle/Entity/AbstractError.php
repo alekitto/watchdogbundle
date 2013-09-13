@@ -50,7 +50,7 @@ abstract class AbstractError
     /**
      * @var boolean
      */
-    protected $read;
+    protected $read = false;
 
     /**
      * Get id
