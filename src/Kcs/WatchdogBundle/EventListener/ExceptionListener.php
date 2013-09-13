@@ -61,7 +61,7 @@ class ExceptionListener
         }
     }
 
-    public function handleException(Exception $exception)
+    public function handleException(\Exception $exception)
     {
       $this->handler->handle($exception, $this->storage, $this->context->getToken());
     }

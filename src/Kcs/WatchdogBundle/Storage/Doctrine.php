@@ -25,6 +25,7 @@ class Doctrine implements StorageInterface
 
     public function persist(AbstractError $error)
     {
+        $this->doctrine->resetManager();
         $em = $this->doctrine->getManager();
         $em->persist($error);
         $em->flush();
