@@ -10,6 +10,7 @@
         </id>
         <field name="level" type="integer" />
         <field name="message" type="text" />
+        <field name="date" type="datetime" />
         <field name="file" type="string" length="510" />
         <field name="line" type="integer" />
         <field name="trace" type="array" />

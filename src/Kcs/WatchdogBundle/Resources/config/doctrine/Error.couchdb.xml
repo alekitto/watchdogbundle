@@ -5,6 +5,7 @@
         <id name="id" />
         <field name="level" type="integer" indexed="true" />
         <field name="message" type="string" indexed="true" />
+        <field name="date" type="datetime" indexed="true" />
         <field name="file" type="string" indexed="true" />
         <field name="line" type="integer" indexed="true" />
         <field name="trace" type="mixed" indexed="true" />

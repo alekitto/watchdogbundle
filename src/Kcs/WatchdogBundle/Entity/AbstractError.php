@@ -18,6 +18,11 @@ abstract class AbstractError
     protected $level;
 
     /**
+     * @var \DateTime
+     */
+    protected $date;
+
+    /**
      * @var string
      */
     protected $message;
@@ -52,6 +57,11 @@ abstract class AbstractError
      */
     protected $read = false;
 
+    public function __construct()
+    {
+        $this->date = new \DateTime;
+    }
+
     /**
      * Get id
      *
@@ -83,6 +93,29 @@ abstract class AbstractError
     public function getLevel()
     {
         return $this->level;
+    }
+
+    /**
+     * Set date
+     *
+     * @param \DateTime $date
+     * @return AbstractError
+     */
+    public function setDate(\DateTime $date)
+    {
+        $this->date = $date;
+    
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime 
+     */
+    public function getDate()
+    {
+        return $this->date;
     }
 
     /**
