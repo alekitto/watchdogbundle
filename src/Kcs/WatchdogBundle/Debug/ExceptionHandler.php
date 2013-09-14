@@ -65,13 +65,13 @@ class ExceptionHandler
 
     private function logException(\Exception $exception, StorageInterface $storage, TokenInterface $token = null)
     {
-        if (!$exception instanceof FlattenException) {
-            $exception = FlattenException::create($exception);
-        }
-
         $level = E_ERROR;
         if($exception instanceof \ErrorException) {
             $level = $exception->getSeverity();
+        }
+
+        if (!$exception instanceof FlattenException) {
+            $exception = FlattenException::create($exception);
         }
 
         $variables = array(
