@@ -278,4 +278,37 @@ abstract class AbstractError
     {
         return $this->read;
     }
+
+    /**
+     * Get error severity
+     *
+     * could be 'critical', 'warning', 'notice'
+     */
+    public function getSeverity()
+    {
+        switch($this->getLevel())
+        {
+            case E_ERROR:
+            case E_CORE_ERROR:
+            case E_COMPILE_ERROR:
+            case E_RECOVERABLE_ERROR:
+            case E_USER_ERROR:
+            case E_PARSE:
+                return 'critical';
+
+            case E_WARNING:
+            case E_USER_WARNING:
+            case E_STRICT:
+                return 'warning';
+
+            case E_DEPRECATED:
+            case E_USER_DEPRECATED:
+            case E_NOTICE:
+            case E_USER_NOTICE:
+                return 'notice';
+
+            default:
+                return 'unknown';
+        }
+    }
 }

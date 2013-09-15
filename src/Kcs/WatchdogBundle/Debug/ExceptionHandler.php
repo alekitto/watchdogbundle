@@ -70,6 +70,8 @@ class ExceptionHandler
             $level = $exception->getSeverity();
         }
 
+        $message = "{" . get_class($exception) . "} " . $exception->getMessage();
+
         if (!$exception instanceof FlattenException) {
             $exception = FlattenException::create($exception);
         }
@@ -94,7 +96,7 @@ class ExceptionHandler
 
         $error = $storage->getNewEntity();
         $error->setLevel($level)
-              ->setMessage($exception->getMessage())
+              ->setMessage($message)
               ->setFile($exception->getFile())
               ->setLine($exception->getLine())
               ->setTrace($exception->getTrace())
