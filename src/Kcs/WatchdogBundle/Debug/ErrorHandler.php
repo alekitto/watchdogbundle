@@ -34,6 +34,12 @@ class ErrorHandler implements EventSubscriberInterface
     private $handler = null;
 
     /**
+     * Kernel debug flag
+     * @var boolean
+     */
+    private $debug = false;
+
+    /**
      * Error levels to string
      * @var array
      */
@@ -65,6 +71,7 @@ class ErrorHandler implements EventSubscriberInterface
         $this->context = $context;
         $this->storage = $storage;
         $this->errorReportingLevel = $errorLevel;
+        $this->debug = $debug;
 
         // Now set the error and fatal handlers
         ini_set('display_errors', 0);
@@ -77,9 +84,6 @@ class ErrorHandler implements EventSubscriberInterface
          * unsetting and freeing this block we can proceed normally
          */
         $this->reservedMemory = str_repeat('x', 10240);
-
-        // Initialize the exception handler
-        $this->handler = new ExceptionHandler($debug);
     }
 
     /**
@@ -89,6 +93,11 @@ class ErrorHandler implements EventSubscriberInterface
     {
         if (0 === $this->errorReportingLevel) {
             return false;
+        }
+
+        if (null === $this->handler) {
+            // Initialize the exception handler
+            $this->handler = new ExceptionHandler($this->debug);
         }
 
         if ($level & (E_USER_DEPRECATED | E_DEPRECATED)) {

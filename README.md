@@ -28,7 +28,7 @@ If you want to use Doctrine CouchDB ODM you have to add this to your configurati
 ...
 
 kcs_watchdog:
-    db_driver:          couchdb         # Allowed values "orm" (default), "couchdb"
+    db_driver:          orm         # Allowed values "orm" (default), "couchdb"
 
 ...
 ```
