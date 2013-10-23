@@ -106,8 +106,9 @@ class ErrorHandler implements EventSubscriberInterface
             return true;
         }
 
-        if (error_reporting() & $level && $this->errorReportingLevel & $level) {
-            throw new \ErrorException(sprintf('%s: %s in %s line %d', isset(self::$levels[$level]) ? self::$levels[$level] : $level, $message, $file, $line), 0, $level, $file, $line);
+        if ($this->errorReportingLevel & $level) {
+            $exception = new \ErrorException(sprintf('%s: %s in %s line %d', isset(self::$levels[$level]) ? self::$levels[$level] : $level, $message, $file, $line), 0, $level, $file, $line);
+            $this->handler->handle($exception, $this->storage, $this->context ? $this->context->getToken() : null);
         }
 
         return false;
