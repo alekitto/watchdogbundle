@@ -83,7 +83,6 @@ class ExceptionHandler
             'COOKIES'          => isset($_COOKIE)?$_COOKIE:array(), 
             'ENV'              => isset($_ENV)?$_ENV:array(), 
             'FILES'            => isset($_FILES)?$_FILES:array(), 
-            'SESSION'          => isset($_SESSION)?$_SESSION:array(), 
             'Request Headers'  => function_exists('apache_request_headers')?(apache_request_headers()):array(),
             'Response Headers' => function_exists('apache_response_headers')?(apache_response_headers()):array(),
         );
