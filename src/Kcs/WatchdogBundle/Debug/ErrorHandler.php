@@ -65,12 +65,20 @@ class ErrorHandler implements EventSubscriberInterface
      */
     private $errorReportingLevel;
 
+    /**
+     * Errors from files contained in these paths are ignored (if not fatal)
+     * @var array
+     */
+    private $ignored_path = array();
+
     private $reservedMemory;
 
-    public function __construct(SecurityContext $context, StorageInterface $storage, $debug, $errorLevel) {
+    public function __construct(SecurityContext $context, StorageInterface $storage,
+            $debug, $errorLevel, array $ignored_path) {
         $this->context = $context;
         $this->storage = $storage;
         $this->errorReportingLevel = $errorLevel;
+        $this->ignored_path = $ignored_path;
         $this->debug = $debug;
 
         // Now set the error and fatal handlers
@@ -104,6 +112,14 @@ class ErrorHandler implements EventSubscriberInterface
             $deprecated = new \ErrorException(sprintf('%s: %s in %s line %d', isset(self::$levels[$level]) ? self::$levels[$level] : $level, $message, $file, $line), 0, $level, $file, $line);
             $this->handler->handle($deprecated, $this->storage, $this->context ? $this->context->getToken() : null);
             return true;
+        }
+
+        foreach($this->ignored_path as $pathRegex)
+        {
+            $pathRegex = '#' . preg_quote($pathRegex, '#') . '#iu';
+            if(preg_match($pathRegex, $file)) {
+                return false;
+            }
         }
 
         if ($this->errorReportingLevel & $level) {

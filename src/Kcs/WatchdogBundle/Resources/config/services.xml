@@ -19,6 +19,7 @@
             <argument>%kernel.debug%</argument>
             <argument>%kcs_watchdog.error_reporting_level%</argument>
             <tag name="kernel.event_subscriber" />
+            <argument>%kcs_watchdog.ignored_errors_path%</argument>
         </service>
     </services>
 

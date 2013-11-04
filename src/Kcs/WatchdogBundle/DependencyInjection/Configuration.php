@@ -26,6 +26,9 @@ class Configuration implements ConfigurationInterface
             ->arrayNode('allowed_exceptions')
                 ->prototype('scalar')->end()
             ->end()
+            ->arrayNode('ignored_errors_path')
+                ->prototype('scalar')->end()
+            ->end()
             ->scalarNode('error_reporting_level')->defaultValue(-1)->end()
             ->scalarNode('document_manager')->defaultValue(null)->end()
         ->end();
