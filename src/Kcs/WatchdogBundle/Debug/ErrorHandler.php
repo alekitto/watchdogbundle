@@ -132,11 +132,11 @@ class ErrorHandler implements EventSubscriberInterface
 
     public function handleFatal()
     {
+        unset($this->reservedMemory);
         if (null === $error = error_get_last()) {
             return;
         }
 
-        unset($this->reservedMemory);
         $type = $error['type'];
         if (0 === $this->errorReportingLevel || !in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE))) {
             return;
