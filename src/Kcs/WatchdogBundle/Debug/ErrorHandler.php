@@ -116,11 +116,12 @@ class ErrorHandler implements EventSubscriberInterface
 
         foreach($this->ignored_path as $pathRegex)
         {
-            $pathRegex = '#' . preg_quote($pathRegex, '#') . '#iu';
+            $pathRegex = '#' . str_replace('#', '\#', $pathRegex) . '#iu';
             if(preg_match($pathRegex, $file)) {
                 return false;
             }
         }
+        var_dump($this->ignored_path); die;
 
         if ($this->errorReportingLevel & $level) {
             $exception = new \ErrorException(sprintf('%s: %s in %s line %d', isset(self::$levels[$level]) ? self::$levels[$level] : $level, $message, $file, $line), 0, $level, $file, $line);
