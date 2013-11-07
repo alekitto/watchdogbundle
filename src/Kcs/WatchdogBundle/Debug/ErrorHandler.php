@@ -121,7 +121,6 @@ class ErrorHandler implements EventSubscriberInterface
                 return false;
             }
         }
-        var_dump($this->ignored_path); die;
 
         if ($this->errorReportingLevel & $level) {
             $exception = new \ErrorException(sprintf('%s: %s in %s line %d', isset(self::$levels[$level]) ? self::$levels[$level] : $level, $message, $file, $line), 0, $level, $file, $line);
