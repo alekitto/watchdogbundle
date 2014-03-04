@@ -142,6 +142,11 @@ class ErrorHandler implements EventSubscriberInterface
             return;
         }
 
+        if (null === $this->handler) {
+            // Initialize the exception handler
+            $this->handler = new ExceptionHandler($this->debug);
+        }
+
         $level = isset(self::$levels[$type]) ? self::$levels[$type] : $type;
         $message = sprintf('%s: %s in %s line %d', $level, $error['message'], $error['file'], $error['line']);
         $exception = new FatalErrorException($message, 0, $type, $error['file'], $error['line']);
