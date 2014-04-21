@@ -8,6 +8,17 @@ use Symfony\Component\Security\Core\SecurityContext;
 use Kcs\WatchdogBundle\Storage\StorageInterface;
 use Kcs\WatchdogBundle\Debug\ExceptionHandler;
 
+/**
+ * ExceptionListener is registered as event listener service on
+ * kernel.exception event.
+ *
+ * When an unhandled exception is thrown the HttpKernel catches it
+ * and fire the kernel.exception event to the listeners.
+ * The onKernelException method passes the exception from the event
+ * object to the exception handler.
+ *
+ * @author Alessandro Chitolina <alekitto@gmail.com>
+ */
 class ExceptionListener
 {
     const TYPE_DEPRECATION = -100;

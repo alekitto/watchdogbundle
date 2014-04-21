@@ -33,6 +33,17 @@ kcs_watchdog:
 ...
 ```
 
+By default it will not log exceptions and errors if ```kernel.debug``` flag is
+set. If you want to enable the error and exceptions logging in debug mode you
+can set the ```log_in_debug``` flag to true.
+
+```yaml
+
+kcs_watchdog:
+    log_in_debug: true
+
+```
+
 You can ignore some exceptions you don't want to log; Example:
 
 ```yaml

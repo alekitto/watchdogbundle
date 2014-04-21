@@ -6,6 +6,11 @@ use Kcs\WatchdogBundle\Entity\AbstractError;
 use Kcs\WatchdogBundle\CouchDocument\Error;
 use Doctrine\ODM\CouchDB\DocumentManager;
 
+/**
+ * CouchDB watchdog storage class
+ *
+ * @author Alessandro Chitolina <alekitto@gmail.com>
+ */
 class CouchDB implements StorageInterface
 {
     /**

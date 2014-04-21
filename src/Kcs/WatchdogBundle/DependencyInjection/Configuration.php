@@ -31,6 +31,7 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('error_reporting_level')->defaultValue(-1)->end()
             ->scalarNode('document_manager')->defaultValue(null)->end()
+            ->booleanNode('log_in_debug')->defaultFalse()->end()
         ->end();
 
         return $treeBuilder;

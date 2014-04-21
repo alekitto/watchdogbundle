@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Kcs\WatchdogBundle\Debug;
 
 use Kcs\WatchdogBundle\Storage\StorageInterface;
@@ -26,13 +17,18 @@ if (!defined('ENT_SUBSTITUTE')) {
 /**
  * ExceptionHandler converts an exception to a Response object.
  *
+ * When an exception is thrown it logs it through a StorageInterface class
+ *
+ * It replaces the symfony ExceptionHandler, but not extending it because
+ * of the private methods in the response creation.
+ *
  * It is mostly useful in debug mode to replace the default PHP/XDebug
  * output with something prettier and more useful.
  *
  * As this class is mainly used during Kernel boot, where nothing is yet
  * available, the Response content is always HTML.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Alessandro Chitolina <alekitto@gmail.com>
  */
 class ExceptionHandler
 {
@@ -52,18 +48,17 @@ class ExceptionHandler
      */
     public function handle(\Exception $exception, StorageInterface $storage, TokenInterface $securityToken = null)
     {
-        if($this->debug) {
-            if($exception instanceof FatalErrorException) {
-                return $this->createResponse($exception);
-            }
-        } else {
+        if($this->debug && $exception instanceof FatalErrorException) {
+            return $this->createResponse($exception);
+        }
+        else {
             $this->logException($exception, $storage, $securityToken);
         }
 
         return null;
     }
 
-    private function logException(\Exception $exception, StorageInterface $storage, TokenInterface $token = null)
+    protected function logException(\Exception $exception, StorageInterface $storage, TokenInterface $token = null)
     {
         $level = E_ERROR;
         if($exception instanceof \ErrorException) {
@@ -253,7 +248,7 @@ EOF;
 EOF;
     }
 
-    private function decorate($content, $css)
+    protected function decorate($content, $css)
     {
         return <<<EOF
 <!DOCTYPE html>
@@ -278,7 +273,7 @@ EOF;
 EOF;
     }
 
-    private function abbrClass($class)
+    protected function abbrClass($class)
     {
         $parts = explode('\\', $class);
 
@@ -292,7 +287,7 @@ EOF;
      *
      * @return string
      */
-    private function formatArgs(array $args)
+    protected function formatArgs(array $args)
     {
         $result = array();
         foreach ($args as $key => $item) {

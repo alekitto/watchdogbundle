@@ -6,6 +6,11 @@ use Kcs\WatchdogBundle\Entity\AbstractError;
 use Kcs\WatchdogBundle\Entity\Error;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 
+/**
+ * Doctrine ORM watchdog storage class
+ *
+ * @author Alessandro Chitolina <alekitto@gmail.com>
+ */
 class Doctrine implements StorageInterface
 {
     /**

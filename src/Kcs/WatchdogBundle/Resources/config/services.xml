@@ -4,18 +4,23 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <parameters>
+        <parameter key="kcs.watchdog.exception_listener.class">Kcs\WatchdogBundle\EventListener\ExceptionListener</parameter>
+        <parameter key="kcs.watchdog.error_handler.class">Kcs\WatchdogBundle\Debug\ErrorHandler</parameter>
+    </parameters>
+
     <services>
-        <service id="watchdog" class="Kcs\WatchdogBundle\EventListener\ExceptionListener">
+        <service id="kcs.watchdog.exception_listener" class="%kcs.watchdog.exception_listener.class%">
             <argument type="service" id="security.context" />
-            <argument type="service" id="watchdog.storage" />
+            <argument type="service" id="kcs.watchdog.storage" />
             <argument>%kernel.debug%</argument>
             <argument>%kcs_watchdog.allowed_exceptions%</argument>
             <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
         </service>
 
-        <service id="watchdog_error_logger" class="Kcs\WatchdogBundle\Debug\ErrorHandler">
+        <service id="kcs.watchdog.error_handler" class="%kcs.watchdog.error_handler.class%">
             <argument type="service" id="security.context" />
-            <argument type="service" id="watchdog.storage" />
+            <argument type="service" id="kcs.watchdog.storage" />
             <argument>%kernel.debug%</argument>
             <argument>%kcs_watchdog.error_reporting_level%</argument>
             <tag name="kernel.event_subscriber" />
