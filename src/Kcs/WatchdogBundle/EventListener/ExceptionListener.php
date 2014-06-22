@@ -2,6 +2,7 @@
 
 namespace Kcs\WatchdogBundle\EventListener;
 
+use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Security\Core\SecurityContext;
 
@@ -55,26 +56,35 @@ class ExceptionListener
 
         // Initialize the exception handler
         $this->handler = new ExceptionHandler($debug);
-        set_exception_handler(array($this, 'handleException'));
+        set_exception_handler(array($this, 'exceptionHandler'));
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        $exception = $event->getException();
+        $response = $this->handleException($event->getException());
 
-        $exception_class = get_class($exception);
-        if(in_array($exception_class, $this->allowedExceptions))
-            return;
-
-        $response = $this->handler->handle($exception, $this->storage, $this->context->getToken());
         if($response !== null) {
             $event->setResponse($response);
         }
     }
 
+    public function onConsoleException(ConsoleExceptionEvent $event)
+    {
+        $this->handleException($event->getException());
+    }
+
+    public function exceptionHandler(\Exception $exception)
+    {
+        $this->handleException($exception);
+    }
+
     public function handleException(\Exception $exception)
     {
-      $this->handler->handle($exception, $this->storage, $this->context->getToken());
+        $exception_class = get_class($exception);
+        if(in_array($exception_class, $this->allowedExceptions))
+            return;
+
+        return $this->handler->handle($exception, $this->storage, $this->context->getToken());
     }
 }
 

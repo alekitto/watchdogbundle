@@ -16,6 +16,7 @@
             <argument>%kernel.debug%</argument>
             <argument>%kcs_watchdog.allowed_exceptions%</argument>
             <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
+            <tag name="kernel.event_listener" event="console.exception" method="onConsoleException" />
         </service>
 
         <service id="kcs.watchdog.error_handler" class="%kcs.watchdog.error_handler.class%">
