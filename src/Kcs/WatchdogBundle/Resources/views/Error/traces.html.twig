@@ -1,0 +1,13 @@
+<div class="block">
+    <h5>Stack Trace</h5>
+
+    <a></a>
+    <ol class="traces list-exception" style="display: block">
+        {% for i, trace in exception.trace %}
+            <li>
+                {% include 'KcsWatchdogBundle:Error:trace.html.twig' with { 'i': i, 'trace': trace } only %}
+            </li>
+        {% endfor %}
+    </ol>
+</div>
+

@@ -35,5 +35,11 @@ class Doctrine implements StorageInterface
         $em->persist($error);
         $em->flush();
     }
+
+    public function find($id)
+    {
+        $em = $this->doctrine->getManager();
+        return $em->find('KcsWatchdogBundle:Error', $id);
+    }
 }
 

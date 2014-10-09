@@ -33,5 +33,10 @@ class CouchDB implements StorageInterface
         $this->documentManager->persist($error);
         $this->documentManager->flush();
     }
+
+    public function find($id)
+    {
+        return $this->documentManager->find('KcsWatchdogBundle:Error', $id);
+    }
 }
 

@@ -1,0 +1,11 @@
+{% macro build_table(input) %}
+    <table class="table table-bordered">
+        {% for k,v in input %}
+            <tr>
+                <th>{{ k }}</th>
+                <td>{% if v is iterable %}{{ _self.build_table(v) }}{% else %}{{ v }}{% endif %}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endmacro %}
+

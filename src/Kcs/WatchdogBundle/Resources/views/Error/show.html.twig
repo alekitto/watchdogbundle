@@ -1,0 +1,9 @@
+{% extends "KcsWatchdogBundle::layout.html.twig" %}
+
+{% use "KcsWatchdogBundle:Error:error.html.twig" %}
+
+{% block kcs_watchdog_content %}
+    <h3>Watchdog entry #{{ error.id }}</h3>
+    {{ parent() }}
+{% endblock %}
+

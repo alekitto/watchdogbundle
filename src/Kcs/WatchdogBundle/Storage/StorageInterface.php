@@ -16,4 +16,12 @@ interface StorageInterface
      * @param AbstractError $error
      */
     public function persist(AbstractError $error);
+
+    /**
+     * Retrieve an error from storage driver
+     *
+     * @param $id
+     * @return AbstractError
+     */
+    public function find($id);
 }
