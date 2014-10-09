@@ -6,6 +6,7 @@
         "symfony/symfony": ">2.2.0",
         "doctrine/doctrine-bundle": "1.2.*"
     },
+    "license": "MIT",
     "autoload": {
         "psr-0": { "Kcs\\": "src/" }
     }
