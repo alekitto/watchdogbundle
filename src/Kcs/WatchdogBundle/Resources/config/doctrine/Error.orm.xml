@@ -13,9 +13,9 @@
         <field name="date" type="datetime" />
         <field name="file" type="string" length="510" />
         <field name="line" type="integer" />
-        <field name="trace" type="array" />
-        <field name="variables" type="array" />
-        <field name="user" column="user_details" type="array" />
+        <field name="trace" type="binary_array" />
+        <field name="variables" type="binary_array" />
+        <field name="user" column="user_details" type="binary_array" />
         <field name="read" column="read_flag" type="boolean" />
     </entity>
 </doctrine-mapping>
