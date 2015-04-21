@@ -4,7 +4,7 @@
     "require": {
         "php": ">=5.3.3",
         "symfony/symfony": ">2.2.0",
-        "doctrine/doctrine-bundle": ">=1.2,<1.4",
+        "doctrine/doctrine-bundle": "~1.2",
         "kcs/doctrine-extras": "~0.1"
     },
     "license": "MIT",
