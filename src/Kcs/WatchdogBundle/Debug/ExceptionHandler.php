@@ -2,8 +2,10 @@
 
 namespace Kcs\WatchdogBundle\Debug;
 
+use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\FlattenException;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 

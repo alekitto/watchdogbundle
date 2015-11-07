@@ -15,6 +15,10 @@ class KcsWatchdogExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        if (!$config['enabled']) {
+            return;
+        }
+
         $container->setParameter('kcs_watchdog.error_reporting_level', $config['error_reporting_level']);
         $container->setParameter('kcs_watchdog.allowed_exceptions', $config['allowed_exceptions']);
         $container->setParameter('kcs_watchdog.ignored_errors_path', $config['ignored_errors_path']);

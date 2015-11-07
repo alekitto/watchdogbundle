@@ -13,6 +13,10 @@ class SetPhpErrorsMonologHandlerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        if (!$container->hasDefinition('kcs.watchdog.error_handler')) {
+            return;
+        }
+
         $definition = $container->getDefinition('monolog.logger.php');
         $definition
             ->addMethodCall('pushHandler', array(new Reference('kcs.watchdog.error_handler')));

@@ -1,47 +1,28 @@
-## KCS Watchdog bundle for Symfony2
+## KCS Watchdog bundle for Symfony
 
 ### Requirements:
 
-* Symfony2
-* Doctrine 2
+Symfony >= 2.8.0
 
 ### Installation:
 
-
-* Include this bundle in your composer.json
-
-```javascript
-    "require": {
-        ...
-        "kcs/watchdog-bundle": "dev-master",
-        ...
-        }
+```bash
+$ composer require kcs/watchdog-bundle
 ```
 
-* Create the watchdog table on your database
-* Enjoy!
+### Configuration
 
-
-If you want to use Doctrine CouchDB ODM you have to add this to your configuration:
+By default this bundle uses doctrine orm to persist the errors to database.
+You can override the persister implementing `Storage\StorageInterface` and
+specifying the new persister service id into `persister` configuration parameter
 
 ```yaml
 ...
 
 kcs_watchdog:
-    db_driver:          orm         # Allowed values "orm" (default), "couchdb"
+    persister:          app_my_custom_persister
 
 ...
-```
-
-By default it will not log exceptions and errors if ```kernel.debug``` flag is
-set. If you want to enable the error and exceptions logging in debug mode you
-can set the ```log_in_debug``` flag to true.
-
-```yaml
-
-kcs_watchdog:
-    log_in_debug: true
-
 ```
 
 You can ignore some exceptions you don't want to log; Example:
@@ -53,3 +34,6 @@ kcs_watchdog:
         - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 
 ```
+
+Setting the `enabled` config parameter to `false` the the bundle will be
+completly disabled. Services and parameters will be not loaded into the container

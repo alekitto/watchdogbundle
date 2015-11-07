@@ -12,6 +12,10 @@ class DoctrinePersisterServicesGeneratorPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        if (!$container->hasDefinition('kcs.watchdog.persister.doctrine')) {
+            return;
+        }
+
         $definition = $container->getDefinition('kcs.watchdog.persister.doctrine');
 
         $orm = clone $definition;

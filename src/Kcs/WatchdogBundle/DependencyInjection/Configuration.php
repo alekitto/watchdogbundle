@@ -16,6 +16,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->booleanNode('enabled')->defaultTrue()->end()
                 ->scalarNode('persister')->defaultValue('kcs.watchdog.persister.doctrine.orm')->end()
                 ->arrayNode('allowed_exceptions')
                     ->prototype('scalar')->end()
