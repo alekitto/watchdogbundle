@@ -16,23 +16,16 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-            ->scalarNode('db_driver')
-                ->defaultValue('orm')
-                ->validate()
-                    ->ifNotInArray($supportedDrivers)
-                    ->thenInvalid('%s is not a supported driver')
+                ->scalarNode('persister')->defaultValue('kcs.watchdog.persister.doctrine.orm')->end()
+                ->arrayNode('allowed_exceptions')
+                    ->prototype('scalar')->end()
                 ->end()
+                ->arrayNode('ignored_errors_path')
+                    ->prototype('scalar')->end()
+                ->end()
+                ->scalarNode('error_reporting_level')->defaultValue(-1)->end()
             ->end()
-            ->arrayNode('allowed_exceptions')
-                ->prototype('scalar')->end()
-            ->end()
-            ->arrayNode('ignored_errors_path')
-                ->prototype('scalar')->end()
-            ->end()
-            ->scalarNode('error_reporting_level')->defaultValue(-1)->end()
-            ->scalarNode('document_manager')->defaultValue(null)->end()
-            ->booleanNode('log_in_debug')->defaultFalse()->end()
-        ->end();
+        ;
 
         return $treeBuilder;
     }

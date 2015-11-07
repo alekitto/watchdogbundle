@@ -13,6 +13,6 @@ class ErrorController extends Controller
             throw $this->createNotFoundException();
         }
 
-        return $this->render('KcsWatchdogBundle:Error:show.html.twig', ['error' => $error]);
+        return $this->render('KcsWatchdogBundle:Error:show.html.twig', array('error' => $error));
     }
 }

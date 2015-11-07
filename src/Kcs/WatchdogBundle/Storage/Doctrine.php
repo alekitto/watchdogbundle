@@ -2,44 +2,51 @@
 
 namespace Kcs\WatchdogBundle\Storage;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Kcs\WatchdogBundle\Entity\AbstractError;
-use Kcs\WatchdogBundle\Entity\Error;
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
-/**
- * Doctrine ORM watchdog storage class
- *
- * @author Alessandro Chitolina <alekitto@gmail.com>
- */
 class Doctrine implements StorageInterface
 {
     /**
-     * @var Registry
+     * @var ObjectManager
      */
-    protected $doctrine;
+    private $om;
 
-    public function __construct(Registry $doctrine)
+    /**
+     * @var ObjectRepository
+     */
+    private $repository;
+
+    public function __construct(RegistryInterface $registry, $objectClass)
     {
-        $this->doctrine = $doctrine;
+        $this->om = $registry->getManagerForClass($objectClass);
+        $this->repository = $this->om->getRepository($objectClass);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getNewEntity()
     {
-        return new Error;
+        $reflClass = new \ReflectionClass($this->repository->getClassName());
+        return $reflClass->newInstance();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function persist(AbstractError $error)
     {
-        $this->doctrine->resetManager();
-        $em = $this->doctrine->getManager();
-        $em->persist($error);
-        $em->flush();
+        $this->om->persist($error);
+        $this->om->flush([$error]);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function find($id)
     {
-        $em = $this->doctrine->getManager();
-        return $em->find('KcsWatchdogBundle:Error', $id);
+        return $this->repository->find($id);
     }
 }
-

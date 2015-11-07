@@ -2,13 +2,8 @@
 
 namespace Kcs\WatchdogBundle\Debug;
 
-use Symfony\Component\Security\Core\SecurityContext;
-
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
+use Monolog\Handler\AbstractProcessingHandler;
 use Kcs\WatchdogBundle\Storage\StorageInterface;
-use Kcs\WatchdogBundle\Debug\ExceptionHandler;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 
 /**
@@ -20,33 +15,29 @@ use Symfony\Component\Debug\Exception\FatalErrorException;
  *
  * @author Alessandro Chitolina <alekitto@gmail.com>
  */
-class ErrorHandler implements EventSubscriberInterface
+class ErrorHandler extends AbstractProcessingHandler
 {
-    const TYPE_DEPRECATION = -100;
+    /**
+     * @var ExceptionHandler
+     */
+    private $handler;
 
     /**
-     * Security Context
-     * @var SecurityContext
+     * The errors below this level will be NOT reported
+     * @var int
      */
-    private $context = null;
+    private $errorReportingLevel;
 
     /**
-     * Entity Storage Interface
-     * @var StorageInterface
+     * Errors from files contained in these paths are ignored (if not fatal)
+     * @var array
      */
-    private $storage = null;
+    private $ignored_path = array();
 
     /**
-     * Exception Handler
-     * @var ExceptionHandler 
+     * Reserved memory to free at shutdown
      */
-    private $handler = null;
-
-    /**
-     * Kernel debug flag
-     * @var boolean
-     */
-    private $debug = false;
+    private $reservedMemory;
 
     /**
      * Error levels to string
@@ -68,77 +59,36 @@ class ErrorHandler implements EventSubscriberInterface
         E_PARSE             => 'Parse',
     );
 
-    /**
-     * The errors below this level will be NOT reported
-     * @var int
-     */
-    private $errorReportingLevel;
-
-    /**
-     * Errors from files contained in these paths are ignored (if not fatal)
-     * @var array
-     */
-    private $ignored_path = array();
-
-    private $reservedMemory;
-
-    public function __construct(
-        SecurityContext $context,
-        StorageInterface $storage,
-        $debug,
-        $errorLevel,
-        array $ignored_path
-        )
+    public function __construct(ExceptionHandler $handler, $errorLevel, array $ignored_path)
     {
-        $this->context = $context;
-        $this->storage = $storage;
+        $this->handler = $handler;
         $this->errorReportingLevel = $errorLevel;
         $this->ignored_path = $ignored_path;
-        $this->debug = $debug;
 
-        // Now set the error and fatal handlers
-        ini_set('display_errors', 0);
-        $this->registerErrorHandler();
-        $this->registerFatalHandler();
-
-        /**
-         * Reserve some memory:
-         * In case of Memory Limit Exceeded this allows the error logging,
-         * unsetting and freeing this block we can proceed normally
-         */
         $this->reservedMemory = str_repeat('x', 10240);
+        register_shutdown_function([$this, 'handleFatal']);
     }
 
     /**
-     * Register the PHP error handler
+     * @inheritDoc
      */
-    protected function registerErrorHandler()
-    {
-        set_error_handler(array($this, 'handleError'));
-    }
-
-    /**
-     * Register a shutdown function in order to log eventual FATAL error
-     */
-    protected function registerFatalHandler()
-    {
-        register_shutdown_function(array($this, 'handleFatal'));
-    }
-
-    /**
-     * Error handler
-     * @throws \ErrorException When error_reporting returns error
-     */
-    public function handleError($level, $message, $file, $line, $context)
+    protected function write(array $record)
     {
         // Error logging disabled
         if (0 === $this->errorReportingLevel) {
-            return false;
+            return;
         }
 
-        if (null === $this->handler) {
-            // Initialize the exception handler
-            $this->handler = new ExceptionHandler($this->debug);
+        set_error_handler(function() {}, E_ALL);
+
+        extract($record['context']);
+        $message = $record['message'];
+
+        restore_error_handler();
+
+        // Check if the error is loggable
+        if (($this->errorReportingLevel & $type) === 0) {
+            return;
         }
 
         // Is the error in a ignored file?
@@ -147,18 +97,12 @@ class ErrorHandler implements EventSubscriberInterface
             $pathRegex = '#' . str_replace('#', '\#', $pathRegex) . '#iu';
             if(preg_match($pathRegex, $file)) {
                 // This path is ignored. Skip the logging
-                return false;
+                return;
             }
         }
 
-        // Check if the error is loggable
-        if ($this->errorReportingLevel & ($level | E_USER_DEPRECATED | E_DEPRECATED)) {
-            $exception = new \ErrorException(sprintf('%s: %s in %s line %d', isset(self::$levels[$level]) ? self::$levels[$level] : $level, $message, $file, $line), 0, $level, $file, $line);
-            $this->handler->handle($exception, $this->storage, $this->context ? $this->context->getToken() : null);
-        }
-
-        // Return true on deprecated errors, false otherwise to continue the event notification
-        return (($level & E_USER_DEPRECATED | E_DEPRECATED) !== 0);
+        $exception = new \ErrorException(sprintf('%s: %s in %s line %d', isset(self::$levels[$type]) ? self::$levels[$type] : $type, $message, $file, $line), 0, $type, $file, $line);
+        $this->handler->logException($exception);
     }
 
     /**
@@ -184,30 +128,14 @@ class ErrorHandler implements EventSubscriberInterface
             return;
         }
 
-        if (null === $this->handler) {
-            // Initialize the exception handler
-            $this->handler = new ExceptionHandler($this->debug);
-        }
-
         $level = isset(self::$levels[$type]) ? self::$levels[$type] : $type;
         $message = sprintf('%s: %s in %s line %d', $level, $error['message'], $error['file'], $error['line']);
 
         // Create the Exception object
         $exception = new FatalErrorException($message, 0, $type, $error['file'], $error['line']);
-        $token = $this->context ? $this->context->getToken() : null;
 
         // Log the error
-        $response = $this->handler->handle($exception, $this->storage, $token);
-        if(null !== $response) {
-            // If the handler produced a response object, send it to the client
-            $response->send();
-        }
-    }
-
-    public function init() { }
-    public static function getSubscribedEvents()
-    {
-        return array(KernelEvents::REQUEST => 'init');
+        $this->handler->logException($exception);
     }
 }
 

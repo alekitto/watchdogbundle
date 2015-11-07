@@ -1,0 +1,27 @@
+<?php
+
+namespace Kcs\WatchdogBundle\DependencyInjection\CompilerPass;
+
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
+class DoctrinePersisterServicesGeneratorPass implements CompilerPassInterface
+{
+    /**
+     * @inheritDoc
+     */
+    public function process(ContainerBuilder $container)
+    {
+        $definition = $container->getDefinition('kcs.watchdog.persister.doctrine');
+
+        $orm = clone $definition;
+        $orm->replaceArgument(1, \Kcs\WatchdogBundle\Entity\Error::class);
+        $orm->setAbstract(false);
+        $container->setDefinition('kcs.watchdog.persister.doctrine.orm', $orm);
+
+        $couchdb = clone $definition;
+        $couchdb->replaceArgument(1, \Kcs\WatchdogBundle\CouchDocument\Error::class);
+        $orm->setAbstract(false);
+        $container->setDefinition('kcs.watchdog.persister.doctrine.couchdb', $orm);
+    }
+}
