@@ -6,22 +6,12 @@ use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\Exception\FlattenException;
+use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 
 /**
- * ExceptionHandler converts an exception to a Response object.
- *
- * When an exception is thrown it logs it through a StorageInterface class
- *
- * It replaces the symfony ExceptionHandler, but not extending it because
- * of the private methods in the response creation.
- *
- * It is mostly useful in debug mode to replace the default PHP/XDebug
- * output with something prettier and more useful.
- *
- * As this class is mainly used during Kernel boot, where nothing is yet
- * available, the Response content is always HTML.
+ * ExceptionHandler converts the exceptions passed from the ErrorHandler
+ * and catched from the event listeners to an entity to be persisted
  *
  * @author Alessandro Chitolina <alekitto@gmail.com>
  */
@@ -49,8 +39,8 @@ class ExceptionHandler implements ContainerAwareInterface
             'COOKIES'          => isset($_COOKIE) ? $_COOKIE : array(),
             'ENV'              => isset($_ENV) ? $_ENV : array(),
             'FILES'            => isset($_FILES) ? $_FILES : array(),
-            'Request Headers'  => function_exists('apache_request_headers')?(apache_request_headers()):array(),
-            'Response Headers' => function_exists('apache_response_headers')?(apache_response_headers()):array(),
+            'Request Headers'  => function_exists('apache_request_headers') ? apache_request_headers() : array(),
+            'Response Headers' => function_exists('apache_response_headers') ? apache_response_headers() : array(),
         );
 
         $user = array();

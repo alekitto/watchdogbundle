@@ -3,8 +3,11 @@
     "description": "Watchdog Bundle for Symfony2 and Doctrine2",
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": "~2.8|3.*",
+        "symfony/symfony": "2.8.x-dev@dev",
         "symfony/monolog-bundle": "~2.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
     },
     "license": "MIT",
     "autoload": {
@@ -16,4 +19,3 @@
         }
     }
 }
-

@@ -37,7 +37,12 @@ class ErrorHandler extends AbstractProcessingHandler
     /**
      * Reserved memory to free at shutdown
      */
-    private $reservedMemory;
+    private static $reservedMemory;
+
+    /**
+     * @var self
+     */
+    private static $fatalErrorHandler;
 
     /**
      * Error levels to string
@@ -65,8 +70,13 @@ class ErrorHandler extends AbstractProcessingHandler
         $this->errorReportingLevel = $errorLevel;
         $this->ignored_path = $ignored_path;
 
-        $this->reservedMemory = str_repeat('x', 10240);
-        register_shutdown_function([$this, 'handleFatal']);
+        self::$fatalErrorHandler = $this;
+    }
+
+    public static function registerFatalErrorHandler()
+    {
+        self::$reservedMemory = str_repeat('x', 10240);
+        register_shutdown_function(__CLASS__ . '::handleFatal');
     }
 
     /**
@@ -81,7 +91,7 @@ class ErrorHandler extends AbstractProcessingHandler
 
         set_error_handler(function() {}, E_ALL);
 
-        extract($record['context']);
+        extract($record['context'] + ['type' => E_ERROR, 'file' => 'unknown file', 'line' => 0]);
         $message = $record['message'];
 
         restore_error_handler();
@@ -108,22 +118,38 @@ class ErrorHandler extends AbstractProcessingHandler
     /**
      * Registered as a shutdown handler to eventually catch a fatal PHP error
      */
-    public function handleFatal()
+    public static function handleFatal()
     {
         // Free reserved memory:
         // If no error is encountered, simply free up this memory region
         // otherwise we should need this memory in order to continue:
         // if, for example, if a memory limit exceeded error occoures
         // we need this space in order to continue and log the error
-        unset($this->reservedMemory);
+        unset(self::$reservedMemory);
+        self::$reservedMemory = null;
 
-        if (null === $error = error_get_last()) {
+        $handler = self::$fatalErrorHandler;
+        if (!$handler instanceof self) {
+            return;
+        }
+
+        // We need this for testing purpose
+        $args = func_get_args();
+        if (isset($args[0])) {
+            $error = $args[0];
+        } else {
+            // @codeCoverageIgnoreStart
+            $error = error_get_last();
+            // @codeCoverageIgnoreEnd
+        }
+
+        if (null === $error) {
             // No error encountered
             return;
         }
 
         $type = $error['type'];
-        if (0 === $this->errorReportingLevel || !in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE))) {
+        if (0 === $handler->errorReportingLevel || !in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE))) {
             // Already logged by handleError function
             return;
         }
@@ -135,7 +161,7 @@ class ErrorHandler extends AbstractProcessingHandler
         $exception = new FatalErrorException($message, 0, $type, $error['file'], $error['line']);
 
         // Log the error
-        $this->handler->logException($exception);
+        $handler->handler->logException($exception);
     }
 }
 

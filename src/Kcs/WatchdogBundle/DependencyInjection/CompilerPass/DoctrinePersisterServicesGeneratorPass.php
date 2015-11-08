@@ -19,12 +19,12 @@ class DoctrinePersisterServicesGeneratorPass implements CompilerPassInterface
         $definition = $container->getDefinition('kcs.watchdog.persister.doctrine');
 
         $orm = clone $definition;
-        $orm->replaceArgument(1, \Kcs\WatchdogBundle\Entity\Error::class);
+        $orm->replaceArgument(1, 'Kcs\WatchdogBundle\Entity\Error');
         $orm->setAbstract(false);
         $container->setDefinition('kcs.watchdog.persister.doctrine.orm', $orm);
 
         $couchdb = clone $definition;
-        $couchdb->replaceArgument(1, \Kcs\WatchdogBundle\CouchDocument\Error::class);
+        $couchdb->replaceArgument(1, 'Kcs\WatchdogBundle\CouchDocument\Error');
         $orm->setAbstract(false);
         $container->setDefinition('kcs.watchdog.persister.doctrine.couchdb', $orm);
     }
