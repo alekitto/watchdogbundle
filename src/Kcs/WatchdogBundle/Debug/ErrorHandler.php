@@ -91,7 +91,7 @@ class ErrorHandler extends AbstractProcessingHandler
 
         set_error_handler(function() {}, E_ALL);
 
-        extract($record['context'] + ['type' => E_ERROR, 'file' => 'unknown file', 'line' => 0]);
+        extract($record['context'] + array ('type' => E_ERROR, 'file' => 'unknown file', 'line' => 0));
         $message = $record['message'];
 
         restore_error_handler();
