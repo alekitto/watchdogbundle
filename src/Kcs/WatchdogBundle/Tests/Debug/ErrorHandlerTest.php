@@ -88,4 +88,67 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
             )
         ));
     }
+
+    public function testHandleFatalShouldNotLogIfErrorLevelIsNotAnError()
+    {
+        $that = $this;
+        $exceptionHandler = $this->prophesize('Kcs\WatchdogBundle\Debug\ExceptionHandler');
+        $exceptionHandler->logException(Argument::cetera())
+            ->shouldNotBeCalled()
+        ;
+
+        $handler = new ErrorHandler($exceptionHandler->reveal(), E_ALL, array (
+            '^/var/www/project/ignored/.+$'
+        ));
+
+        ErrorHandler::handleFatal(array (
+            'message' => 'Not intresting',
+            'type' => E_NOTICE,
+            'file' => '/var/www/project/src/ErrorRaisingClass.php',
+            'line' => 151
+        ));
+    }
+
+    public function testHandleFatalShouldNotLogIfErrorReportingIsDisabled()
+    {
+        $that = $this;
+        $exceptionHandler = $this->prophesize('Kcs\WatchdogBundle\Debug\ExceptionHandler');
+        $exceptionHandler->logException(Argument::cetera())
+            ->shouldNotBeCalled()
+        ;
+
+        $handler = new ErrorHandler($exceptionHandler->reveal(), 0, array (
+            '^/var/www/project/ignored/.+$'
+        ));
+
+        ErrorHandler::handleFatal(array (
+            'message' => 'Not intresting',
+            'type' => E_ERROR,
+            'file' => '/var/www/project/src/ErrorRaisingClass.php',
+            'line' => 151
+        ));
+    }
+
+    public function testHandleFatal()
+    {
+        $that = $this;
+        $exceptionHandler = $this->prophesize('Kcs\WatchdogBundle\Debug\ExceptionHandler');
+        $exceptionHandler->logException(Argument::cetera())
+            ->shouldBeCalledTimes(1)
+            ->will(function(array $args) use ($that) {
+                $that->assertInstanceOf('Symfony\Component\Debug\Exception\FatalErrorException', $args[0]);
+            })
+        ;
+
+        $handler = new ErrorHandler($exceptionHandler->reveal(), E_ALL, array (
+            '^/var/www/project/ignored/.+$'
+        ));
+
+        ErrorHandler::handleFatal(array (
+            'message' => 'Not intresting',
+            'type' => E_ERROR,
+            'file' => '/var/www/project/src/ErrorRaisingClass.php',
+            'line' => 151
+        ));
+    }
 }

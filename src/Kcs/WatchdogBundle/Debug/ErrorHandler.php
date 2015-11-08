@@ -125,7 +125,6 @@ class ErrorHandler extends AbstractProcessingHandler
         // otherwise we should need this memory in order to continue:
         // if, for example, if a memory limit exceeded error occoures
         // we need this space in order to continue and log the error
-        unset(self::$reservedMemory);
         self::$reservedMemory = null;
 
         $handler = self::$fatalErrorHandler;
