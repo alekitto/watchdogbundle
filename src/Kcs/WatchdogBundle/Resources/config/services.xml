@@ -7,19 +7,9 @@
     <parameters>
         <parameter key="kcs.watchdog.exception_handler.class">Kcs\WatchdogBundle\Debug\ExceptionHandler</parameter>
         <parameter key="kcs.watchdog.error_handler.class">Kcs\WatchdogBundle\Debug\ErrorHandler</parameter>
-        <parameter key="kcs.watchdog.storage.doctrine.class">Kcs\WatchdogBundle\Storage\Doctrine</parameter>
     </parameters>
 
     <services>
-        <service id="kcs.watchdog.persister.doctrine"
-                 class="%kcs.watchdog.storage.doctrine.class%"
-                 abstract="true"
-                 public="false"
-        >
-            <argument type="service" id="doctrine" />
-            <argument></argument>
-        </service>
-
         <service id="kcs.watchdog.exception_handler" class="%kcs.watchdog.exception_handler.class%">
             <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
             <tag name="kernel.event_listener" event="console.exception" method="onConsoleException" />

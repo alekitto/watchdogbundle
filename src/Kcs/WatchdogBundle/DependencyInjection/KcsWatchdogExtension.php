@@ -30,5 +30,8 @@ class KcsWatchdogExtension extends Extension
         $container->setAlias('kcs.watchdog.persister', $config['persister']);
 
         $loader->load('services.xml');
+        if ($container->hasDefinition('doctrine')) {
+            $loader->load('doctrine_persister.xml');
+        }
     }
 }

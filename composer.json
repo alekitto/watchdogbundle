@@ -3,13 +3,17 @@
     "description": "Watchdog Bundle for Symfony2 and Doctrine2",
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": ">2.8.0",
-        "doctrine/doctrine-bundle": "~1.2",
-        "kcs/doctrine-extras": "~0.1"
+        "symfony/symfony": "~2.8|3.*",
+        "symfony/monolog-bundle": "~2.4"
     },
     "license": "MIT",
     "autoload": {
         "psr-0": { "Kcs\\WatchdogBundle\\": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
     }
 }
 

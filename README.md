@@ -10,6 +10,11 @@ Symfony >= 2.8.0
 $ composer require kcs/watchdog-bundle
 ```
 
+In order to make doctrine DBAL persister work you need to install `kcs/doctrine-extras`
+package and register the `Kcs\Doctrine\Types\BinaryArrayType` as `binary_array`.
+This is required since the trace log serialization could lead to problems if used into a
+`LONGTEXT` field in MySQL.
+
 ### Configuration
 
 By default this bundle uses doctrine orm to persist the errors to database.
