@@ -2,16 +2,22 @@
 
 namespace Kcs\WatchdogBundle\Debug;
 
+use Kcs\WatchdogBundle\Storage\StorageInterface;
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\Exception\FatalErrorException;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * ExceptionHandler converts the exceptions passed from the ErrorHandler
  * and catched from the event listeners to an entity to be persisted
+ *
+ * NOTE: we need to inject the container to avoid a circular reference exception
+ * getStorage and getTokenStorage methods are protected for testing purpose
+ * and should not be overridden
  *
  * @author Alessandro Chitolina <alekitto@gmail.com>
  */
@@ -19,14 +25,29 @@ class ExceptionHandler implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
+    /**
+     * @var string[]
+     */
+    private $allowedExceptions;
+
+    public function __construct(array $allowedExceptions)
+    {
+        $this->allowedExceptions = $allowedExceptions;
+    }
+
     public function logException(\Exception $exception)
     {
+        $class_ = get_class($exception);
         $level = E_ERROR;
         if($exception instanceof \ErrorException) {
             $level = $exception->getSeverity();
         }
 
-        $message = "{" . get_class($exception) . "} " . $exception->getMessage();
+        if (in_array($class_, $this->allowedExceptions)) {
+            return;
+        }
+
+        $message = "{" . $class_ . "} " . $exception->getMessage();
 
         if (!$exception instanceof FlattenException) {
             $exception = FlattenException::create($exception);
@@ -74,12 +95,24 @@ class ExceptionHandler implements ContainerAwareInterface
         $this->logException($event->getException());
     }
 
-    private function getStorage()
+    /**
+     * Get the storage service
+     *
+     * @internal
+     * @return StorageInterface
+     */
+    protected function getStorage()
     {
         return $this->container->get('kcs.watchdog.persister');
     }
 
-    private function getTokenStorage()
+    /**
+     * Get the request token storage
+     *
+     * @internal
+     * @return TokenStorage
+     */
+    protected function getTokenStorage()
     {
         return $this->container->get('security.token_storage');
     }
