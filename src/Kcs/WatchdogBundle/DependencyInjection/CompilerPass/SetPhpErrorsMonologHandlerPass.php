@@ -13,7 +13,7 @@ class SetPhpErrorsMonologHandlerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('kcs.watchdog.error_handler')) {
+        if (! $container->hasDefinition('kcs.watchdog.error_handler')) {
             return;
         }
 

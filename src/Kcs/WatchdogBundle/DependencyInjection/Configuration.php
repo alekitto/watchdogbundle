@@ -12,8 +12,6 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('kcs_watchdog');
 
-        $supportedDrivers = array('orm', 'couchdb');
-
         $rootNode
             ->children()
                 ->booleanNode('enabled')->defaultTrue()->end()

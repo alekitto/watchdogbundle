@@ -151,4 +151,26 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
             'line' => 151
         ));
     }
+
+    public function testFatalHandlerShouldNotLogIfHandlerIsNotInstanceOfSelf()
+    {
+        $exceptionHandler = $this->prophesize('Kcs\WatchdogBundle\Debug\ExceptionHandler');
+        $exceptionHandler->logException(Argument::cetera())
+            ->shouldNotBeCalled();
+
+        $handler = new ErrorHandler($exceptionHandler->reveal(), E_ALL, array());
+
+        $reflClass = new \ReflectionClass($handler);
+        $prop = $reflClass->getProperty('fatalErrorHandler');
+        $prop->setAccessible(true);
+        $prop->setValue(null, null);
+
+
+        ErrorHandler::handleFatal(array (
+            'message' => 'Not intresting',
+            'type' => E_ERROR,
+            'file' => '/var/www/project/src/ErrorRaisingClass.php',
+            'line' => 151
+        ));
+    }
 }

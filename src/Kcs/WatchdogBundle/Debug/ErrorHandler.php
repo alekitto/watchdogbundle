@@ -73,6 +73,10 @@ class ErrorHandler extends AbstractProcessingHandler
         self::$fatalErrorHandler = $this;
     }
 
+    /**
+     * Register a shutdown function to catch fatal errors
+     * @codeCoverageIgnore
+     */
     public static function registerFatalErrorHandler()
     {
         self::$reservedMemory = str_repeat('x', 10240);
@@ -91,6 +95,9 @@ class ErrorHandler extends AbstractProcessingHandler
 
         set_error_handler(function() {}, E_ALL);
 
+        /** @var string $file */
+        /** @var int $type */
+        /** @var int $line */
         extract($record['context'] + array ('type' => E_ERROR, 'file' => 'unknown file', 'line' => 0));
         $message = $record['message'];
 
@@ -142,10 +149,14 @@ class ErrorHandler extends AbstractProcessingHandler
             // @codeCoverageIgnoreEnd
         }
 
+        // @codeCoverageIgnoreStart
+        // This piece of code can't be tested because isset
+        // checks for non-null values
         if (null === $error) {
             // No error encountered
             return;
         }
+        // @codeCoverageIgnoreEnd
 
         $type = $error['type'];
         if (0 === $handler->errorReportingLevel || !in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE))) {

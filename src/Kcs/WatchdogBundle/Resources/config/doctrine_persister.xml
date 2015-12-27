@@ -14,8 +14,8 @@
                  abstract="true"
                  public="false"
         >
-            <argument type="service" id="doctrine" />
-            <argument></argument>
+            <argument />
+            <argument />
         </service>
     </services>
 
